@@ -1,0 +1,170 @@
+<!--
+Beginning of Weather App
+
+Also requires files:
+	weather.css
+	weather.js
+-->
+<!doctype HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width"> 
+	<title>Weather App</title>
+	<link rel="stylesheet" type="text/css" href="reset.css">
+	<link rel="stylesheet" type="text/css" href="weather.css">
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato:thin,light,regular">
+  </head>
+
+<body onresize="init()">
+<div id="header">
+  <div id="dateAndTime">
+    <p id="time"></p>
+    <p id="date"></p>
+  </div>
+  <div id="searchDiv">
+    <input id="searchbox" type="text" placeholder=" enter zip">
+    <button id="submit" onclick="gotNewPlace()">submit</button>
+    <button id="submitMobile" onclick="gotNewPlace()"><img src="./assets/plus.png" alt="Submit"></button>
+  </div>
+  <p id="timeMobile"></p>
+  <p id="locationMobile"></p>
+</div>
+
+<div id="currentConditions">
+  <div id="currentConditionIconDiv">
+    <img id="currentConditionIcon" alt="Current Condition" src="./assets/sunny.png">
+  </div>
+  <div id="currentConditionsCenter">
+    <p id="location"></p>
+    <p id="currentTemp"></p>
+    <p id="conditionText"></p>
+  </div>
+  <div id="currentConditionsRight">
+    <div id="humidityDiv">
+      <img src="./assets/drop.png" alt="Humidity">
+      <p id="humidity"></p>
+    </div>
+    <div id="windDiv">
+      <img src="./assets/wind.png" alt="Wind">
+      <p id="wind"></p>
+    </div>
+  </div>
+</div>
+
+<div id="aroundForecast">
+  <div id="weatherBox">
+    <div class="forecastBox" id="forecast0">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast1">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast2">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast3">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast4">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast5">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast6">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast7">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast8">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+    <div class="forecastBox" id="forecast9">
+      <p class="forecastDay"></p>
+      <div class="forecastConditionDiv"><img class="forecastCondition" alt="Condition" src="./assets/sunny.png"></div>
+      <p class="forecastCondition"></p>
+      <div class="forecastTemps">
+        <p class="forecastHigh"></p>
+        <p class="forecastLow"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="forecastButtons">
+    <div id="previousButton">
+      <button class="forecastButton" id="previous" onclick="previous()"><img id="leftimg" src="./assets/arrow-left.png" alt="Lect Button">previous forecasts</button>
+    </div>
+    <div id="nextButton">
+      <button class="forecastButton" id="next" onclick="more()">more forecasts<img id="rightimg" src="./assets/arrow-right.png" alt="Right Button"></button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="https://www.yahoo.com/?ilc=401"><img src="https://poweredby.yahoo.com/white.png" alt="Powered by Yahoo!"></a>
+</footer>
+
+<!-- contains callback function that is called when weather gets here from server --> 
+<script src="weather.js"></script>
+
+<!-- asks server to send weather -->
+<script id="jsonpCall" src="https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text='davis,%20ca')&format=json&callback=callbackFunction"></script>
+
+</body>
+</html>
