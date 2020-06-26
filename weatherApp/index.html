@@ -161,10 +161,7 @@ Also requires files:
 </footer>
 
 <!-- contains callback function that is called when weather gets here from server --> 
-<script src="weather.js"></script>
-
-<!-- asks server to send weather -->
-<script id="jsonpCall" src="https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text='davis,%20ca')&format=json&callback=callbackFunction"></script>
+<script src="./weather.js"></script>
 
 </body>
 </html>

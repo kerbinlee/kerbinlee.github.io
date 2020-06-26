@@ -23,56 +23,7 @@ function init() {
 
 /* run init code */
 init();
-
-/* convert month abbreviation to full month */
-function fullMonth(abbreviation) {
-  if (abbreviation === "Jan")
-    return "January";
-  else if (abbreviation === "Feb")
-    return "February";
-  else if (abbreviation === "Mar")
-    return "March";
-  else if (abbreviation === "Apr")
-    return "April";
-  else if (abbreviation === "Jun")
-    return "June";
-  else if (abbreviation === "Jul")
-    return "July";
-  else if (abbreviation === "Aug")
-    return "August";
-  else if (abbreviation === "Sep")
-    return "September";
-  else if (abbreviation === "Oct")
-    return "October";
-  else if (abbreviation === "Nov")
-    return "November";
-  else if (abbreviation === "Dec")
-    return "December";
-}
-
-/* remove leading 0 from hour */
-function removeZero(num) {
-  if (num == "01")
-    return "1";
-  else if (num == "02")
-    return "2";
-  else if (num == "03")
-    return "3";
-  else if (num == "04")
-    return "4";
-  else if (num == "05")
-    return "5";
-  else if (num == "06")
-    return "6";
-  else if (num == "07")
-    return "7";
-  else if (num == "08")
-    return "8";
-  else if (num == "09")
-    return "9";
-  else
-    return num;
-}
+gotNewPlace("Davis, CA");
 
 /* match weather condition code to image file */
 function icon(code) {
@@ -94,15 +45,18 @@ function icon(code) {
 /* called when new weather arrives */;
 var weatherObject;
 
-function callbackFunction(data) {
+function callbackFunction() {
+  var data = this.responseText;
+  console.log("data:" + data);
   var pgh; //for selected HTML elements
   
-  weatherObject = data;  
+  weatherObject = JSON.parse(data);  
   
   pgh = document.getElementById("searchbox");
 
-  if (weatherObject.query.results == null){
+  if (Object.entries(weatherObject.location).length === 0) {
     pgh.style.color = "red";
+    return;
   }
   else
   {
@@ -110,78 +64,70 @@ function callbackFunction(data) {
   }
   
   /* get build date of weather data and tokenize */
-  var buildDate = JSON.stringify(weatherObject.query.results.channel.lastBuildDate);
-  var timeAndDate = buildDate.split(" ");
-  var time = timeAndDate[4].split(":");
+  var buildDate = weatherObject.current_observation.pubDate;
+  var time = new Date(buildDate*1000);
   
   /* update time */
+  const timeOptions = { hour12: 'true', hour: 'numeric', minute: 'numeric', timeZone: weatherObject.location.timezone_id };
   pgh = document.getElementById("time");
-  pgh.textContent = "Today " + removeZero(time[0]) + ':' + time[1] + timeAndDate[5].toLowerCase();
+  pgh.textContent = "Today " + time.toLocaleTimeString("en-US", timeOptions).toLocaleLowerCase();
   
   /* update time for mobile */
   pgh = document.getElementById("timeMobile");
-  pgh.textContent = "Today " + removeZero(time[0]) + ':' + time[1] + timeAndDate[5].toLowerCase();
+  pgh.textContent = "Today " + time.toLocaleTimeString("en-US", timeOptions).toLocaleLowerCase();
   
   /* update date */
+  const dateOptions = { month: 'long', day: 'numeric', year: 'numeric', timeZone: weatherObject.location.timezone_id };
   pgh = document.getElementById("date");
-  pgh.textContent = fullMonth(timeAndDate[2]) + ' ' + timeAndDate[1] + ", " + timeAndDate[3]; //need to convert to full month
+  pgh.textContent = time.toLocaleDateString("en-US", dateOptions);
   
   /* update current conditions icon */
   pgh = document.getElementById("currentConditionIcon");
-  pgh.src = "./assets/" + icon(weatherObject.query.results.channel.item.condition.code)
+  pgh.src = "./assets/" + icon(weatherObject.current_observation.condition.code)
   
   /* update location */
   pgh = document.getElementById("location");
-  pgh.textContent = weatherObject.query.results.channel.location.city + ", " + weatherObject.query.results.channel.location.region;
+  pgh.textContent = weatherObject.location.city + ", " + weatherObject.location.region;
 
   /* update location for mobile */
   pgh = document.getElementById("locationMobile");
-  pgh.textContent = weatherObject.query.results.channel.location.city + ", " + weatherObject.query.results.channel.location.region;
+  pgh.textContent = weatherObject.location.city + ", " + weatherObject.location.region;
   
   /* update temp */
   pgh = document.getElementById("currentTemp");
-  pgh.textContent = weatherObject.query.results.channel.item.condition.temp + "\u00B0 F"; //need degree symbol and F as superscript;
+  pgh.textContent = weatherObject.current_observation.condition.temperature + "\u00B0 F";
   
   /* update current condition text */
   pgh = document.getElementById("conditionText");
-  pgh.textContent = weatherObject.query.results.channel.item.condition.text.toLowerCase();
+  pgh.textContent = weatherObject.current_observation.condition.text.toLowerCase();
 
   /* update humidity */
   pgh = document.getElementById("humidity");
-  pgh.textContent = weatherObject.query.results.channel.atmosphere.humidity + '%';
+  pgh.textContent = weatherObject.current_observation.atmosphere.humidity + '%';
   
   /* update wind speed */
   pgh = document.getElementById("wind");
-  pgh.textContent = weatherObject.query.results.channel.wind.speed + "mph";
+  pgh.textContent = weatherObject.current_observation.wind.speed + "mph";
   
-	pgh = document.getElementsByClassName("forecastBox");
+  pgh = document.getElementsByClassName("forecastBox");
 
   var i;
   var br = document.createElement('br');
   for(i = 0; i < 10; i++) {
-    pgh[i].children[0].textContent = weatherObject.query.results.channel.item.forecast[i].day;
-    pgh[i].children[1].children[0].src = "./assets/" + icon(weatherObject.query.results.channel.item.forecast[i].code); 
-    pgh[i].children[2].textContent = weatherObject.query.results.channel.item.forecast[i].text.toLowerCase();
-    pgh[i].children[3].children[0].textContent = weatherObject.query.results.channel.item.forecast[i].high + "\u00B0";
-    pgh[i].children[3].children[1].textContent = weatherObject.query.results.channel.item.forecast[i].low + "\u00B0";
+    pgh[i].children[0].textContent = weatherObject.forecasts[i].day;
+    pgh[i].children[1].children[0].src = "./assets/" + icon(weatherObject.forecasts[i].code); 
+    pgh[i].children[2].textContent = weatherObject.forecasts[i].text.toLowerCase();
+    pgh[i].children[3].children[0].textContent = weatherObject.forecasts[i].high + "\u00B0";
+    pgh[i].children[3].children[1].textContent = weatherObject.forecasts[i].low + "\u00B0";
   }
 }
 
-function gotNewPlace() {
-  /* get text from search bar */
-  var newPlace = document.getElementById("searchbox").value;
-
-  /* remove old script element if it exists */
-  var oldScript = document.getElementById("jsonpCall");
-  if (oldScript != null) {
-    document.body.removeChild(oldScript);
-  } 
-  
-  /* add script for new location */
-  var script = document.createElement('script');
-  script.src = "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + newPlace + "')&format=json&callback=callbackFunction";
-  script.id = "jsonpCall";
-  document.body.appendChild(script);
+function gotNewPlace(defaultPlace) {
+var newPlace = (defaultPlace === undefined ? document.getElementById("searchbox").value : defaultPlace);
+var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", callbackFunction);
+	oReq.open("GET", "https://maythird.ddns.net/query?location=" + newPlace + "&format=json");
+	oReq.send();
 }
 
 function more() {
